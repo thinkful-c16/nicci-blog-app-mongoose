@@ -87,7 +87,7 @@ module.exports = function(app) {
   // following required fields are in request body: `id`, `title`,
   // `content`, `author`, `publishDate`
   app.put('/blogposts/:id', (req, res) => {
-    const reqFields = [ 'title', 'content', 'author' ];
+    const reqFields = [ 'id', 'title', 'content', 'author' ];
     for (let i=0; i < reqFields.length; i++){
       const field = reqFields[i];
       if (!( field in req.body)){
@@ -102,13 +102,25 @@ module.exports = function(app) {
       return res.status(400).send(message);
     }
     console.log(`Updating blog post ${req.params.id}`);
-    const updatedPost = BlogPosts.update({
-      id: req.params.id,
-      title: req.body.title,
-      content: req.body.content,
-      author: req.body.author
+    // const updatedPost = BlogPosts.update({
+    //   id: req.params.id,
+    //   title: req.body.title,
+    //   content: req.body.content,
+    //   author: req.body.author
+    // });
+    const upDateThese = {};
+    const updatableFields = [ 'title', 'content', 'author' ];
+
+    updatableFields.forEach(field => {
+      upDateThese[field] = req.body[field];
     });
-    res.status(204).json(updatedPost);
+
+    BlogSchema
+      .findByIdAndUpdate(req.params.id, { $set: upDateThese})
+      .then( blogpost => res.status(204).json(blogpost))
+      .catch( err => {
+        err => res.status(500).json( { message: 'Something went wrong!'} );
+      });
   });
 
   // add endpoint for DELETE requests. These requests should
