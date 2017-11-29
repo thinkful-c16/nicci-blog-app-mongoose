@@ -6,9 +6,9 @@ const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
 const {PORT, DATABASE_URL} = require('./config');
-const router = require('./blogPostsRouter.js');
-const {BlogPosts} = require('./models.js');
 
+const router = require('./blogPostsRouter.js');
+const { BlogPosts } = require('./models.js');
 const { BlogSchema } = require('./schemas.js');
 
 mongoose.connect(
@@ -21,12 +21,13 @@ mongoose.connect(
   }
 );
 
-const app = express();
+const app = express();  //call express as app
+router(app); //make express (as app) available to router
+//app.use('/blogposts', router);
 
 app.use(morgan('common'));
 
-router(app);
-//app.use('/blogposts', router);
+
 
 // you need to import `blogPostsRouter` router and route
 // requests to HTTP requests to `/blog-posts` to `blogPostsRouter`
